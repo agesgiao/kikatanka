@@ -98,63 +98,51 @@
         { video: document.getElementById("video62"), entity: document.getElementById("target6") }, // kk62 エンディング
       ];
 
-      let timeoutId = null;
-      let countdownInterval = null;
-      let endingTriggered = false;
+let timeoutId;
+let endingTriggered = false;
+let challengeStarted = false;
 
-      const countdownElem = document.getElementById("countdown");
+// ターゲット1（最初は無視、後で成功 or 失敗に使う）
+targets[0].entity.addEventListener("targetFound", () => {
+  if (!challengeStarted) return;
 
-      // 通常ターゲット（ターゲット1〜4）はマーカー検出中のみ再生
-      targets.slice(0, 4).forEach(({ video, entity }) => {
-        entity.addEventListener("targetFound", () => video.play());
-        entity.addEventListener("targetLost", () => video.pause());
-      });
+  if (endingTriggered) return;
+  clearTimeout(timeoutId);
+  targets[7].video.play(); // kk62 = 成功エンディング
+  endingTriggered = true;
+  console.log("成功エンディング（kk62）再生");
+});
 
-      // ターゲット5（kk5） → 10秒間再生＆カウントダウン開始
-      targets[4].entity.addEventListener("targetFound", () => {
-        if (endingTriggered) return;
+// ターゲット2～5（kk1～kk4）を読み込むと再生
+targets[1].entity.addEventListener("targetFound", () => {
+  targets[1].video.play(); // kk1
+});
+targets[2].entity.addEventListener("targetFound", () => {
+  targets[2].video.play(); // kk2
+});
+targets[3].entity.addEventListener("targetFound", () => {
+  targets[3].video.play(); // kk3
+});
+targets[4].entity.addEventListener("targetFound", () => {
+  targets[4].video.play(); // kk4
+});
 
-        targets[4].video.currentTime = 0;
-        targets[4].video.play();
+// ターゲット6（kk5） → チャレンジスタート・時間制限
+targets[5].entity.addEventListener("targetFound", () => {
+  if (endingTriggered || challengeStarted) return;
 
-        let timeLeft = 10;
-        countdownElem.textContent = timeLeft;
-        countdownElem.style.display = "block";
+  targets[5].video.play(); // kk5
+  challengeStarted = true;
 
-        countdownInterval = setInterval(() => {
-          timeLeft--;
-          countdownElem.textContent = timeLeft;
-          if (timeLeft <= 0) {
-            clearInterval(countdownInterval);
-          }
-        }, 1000);
+  timeoutId = setTimeout(() => {
+    if (!endingTriggered) {
+      targets[6].video.play(); // kk61 = 失敗エンド
+      endingTriggered = true;
+      console.log("失敗エンディング（kk61）再生");
+    }
+  }, 10000); // 10秒
+});
 
-        timeoutId = setTimeout(() => {
-          if (!endingTriggered) {
-            targets[4].video.pause(); // kk5 停止
-            targets[5].video.currentTime = 0;
-            targets[5].video.play(); // バッドエンド再生
-            endingTriggered = true;
-            countdownElem.style.display = "none";
-            console.log("バッドエンド再生");
-          }
-        }, 10000);
-      });
-
-      // ターゲット6（kk62）が見つかった → 成功エンディング
-      targets[6].entity.addEventListener("targetFound", () => {
-        if (endingTriggered) return;
-
-        clearTimeout(timeoutId);
-        clearInterval(countdownInterval);
-        countdownElem.style.display = "none";
-
-        targets[4].video.pause(); // kk5 停止
-        targets[6].video.currentTime = 0;
-        targets[6].video.play(); // 成功エンディング再生
-        endingTriggered = true;
-        console.log("成功エンディング再生");
-      });
     });
   </script>
 </body>
