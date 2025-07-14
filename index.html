@@ -87,63 +87,61 @@
   <div id="countdown">10</div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const targets = [
-        { video: document.getElementById("video1"), entity: document.getElementById("target1") },
-        { video: document.getElementById("video2"), entity: document.getElementById("target2") },
-        { video: document.getElementById("video3"), entity: document.getElementById("target3") },
-        { video: document.getElementById("video4"), entity: document.getElementById("target4") },
-        { video: document.getElementById("video5"), entity: document.getElementById("target5") }, // kk5
-        { video: document.getElementById("video61") }, // kk61 バッドエンド
-        { video: document.getElementById("video62"), entity: document.getElementById("target6") }, // kk62 エンディング
-      ];
+ document.addEventListener("DOMContentLoaded", () => {
+  const targets = [
+    { video: document.getElementById("video1"), entity: document.getElementById("target1") }, // ターゲット1
+    { video: document.getElementById("video2"), entity: document.getElementById("target2") }, // ターゲット2
+    { video: document.getElementById("video3"), entity: document.getElementById("target3") }, // ターゲット3
+    { video: document.getElementById("video4"), entity: document.getElementById("target4") }, // ターゲット4
+    { video: document.getElementById("video5"), entity: document.getElementById("target5") }, // ターゲット5（kk4）
+    { video: document.getElementById("video61") }, // kk61 バッドエンド
+    { video: document.getElementById("video62"), entity: document.getElementById("target6") }, // ターゲット6（kk5）＆成功エンド
+  ];
 
-let timeoutId;
-let endingTriggered = false;
-let challengeStarted = false;
+  let timeoutId;
+  let endingTriggered = false;
+  let challengeStarted = false;
 
-// ターゲット1（最初は無視、後で成功 or 失敗に使う）
-targets[0].entity.addEventListener("targetFound", () => {
-  if (!challengeStarted) return;
+  // ターゲット1（成功判定用）
+  targets[0].entity.addEventListener("targetFound", () => {
+    if (!challengeStarted || endingTriggered) return;
+    clearTimeout(timeoutId);
+    targets[6].video.play(); // kk62（成功エンド）
+    endingTriggered = true;
+    console.log("成功エンディング（kk62）再生");
+  });
 
-  if (endingTriggered) return;
-  clearTimeout(timeoutId);
-  targets[7].video.play(); // kk62 = 成功エンディング
-  endingTriggered = true;
-  console.log("成功エンディング（kk62）再生");
+  // ターゲット2〜5（kk1〜kk4）
+  targets[1].entity.addEventListener("targetFound", () => {
+    targets[1].video.play(); // kk1
+  });
+  targets[2].entity.addEventListener("targetFound", () => {
+    targets[2].video.play(); // kk2
+  });
+  targets[3].entity.addEventListener("targetFound", () => {
+    targets[3].video.play(); // kk3
+  });
+  targets[4].entity.addEventListener("targetFound", () => {
+    targets[4].video.play(); // kk4
+  });
+
+  // ターゲット6（kk5） → チャレンジスタート
+  targets[6].entity.addEventListener("targetFound", () => {
+    if (endingTriggered || challengeStarted) return;
+
+    targets[6].video.play(); // kk5
+    challengeStarted = true;
+
+    timeoutId = setTimeout(() => {
+      if (!endingTriggered) {
+        targets[5].video.play(); // kk61（バッドエンド）
+        endingTriggered = true;
+        console.log("失敗エンディング（kk61）再生");
+      }
+    }, 10000); // 10秒
+  });
 });
 
-// ターゲット2～5（kk1～kk4）を読み込むと再生
-targets[1].entity.addEventListener("targetFound", () => {
-  targets[1].video.play(); // kk1
-});
-targets[2].entity.addEventListener("targetFound", () => {
-  targets[2].video.play(); // kk2
-});
-targets[3].entity.addEventListener("targetFound", () => {
-  targets[3].video.play(); // kk3
-});
-targets[4].entity.addEventListener("targetFound", () => {
-  targets[4].video.play(); // kk4
-});
-
-// ターゲット6（kk5） → チャレンジスタート・時間制限
-targets[5].entity.addEventListener("targetFound", () => {
-  if (endingTriggered || challengeStarted) return;
-
-  targets[5].video.play(); // kk5
-  challengeStarted = true;
-
-  timeoutId = setTimeout(() => {
-    if (!endingTriggered) {
-      targets[6].video.play(); // kk61 = 失敗エンド
-      endingTriggered = true;
-      console.log("失敗エンディング（kk61）再生");
-    }
-  }, 10000); // 10秒
-});
-
-    });
   </script>
 </body>
 </html>
