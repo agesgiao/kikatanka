@@ -53,8 +53,8 @@
       <video id="video3" src="./kk3.mp4" loop muted playsinline crossorigin="anonymous"></video>
       <video id="video4" src="./kk4.mp4" loop muted playsinline crossorigin="anonymous"></video>
       <video id="video5" src="./kk5.mp4" playsinline crossorigin="anonymous"></video>
-      <video id="video61" src="./kk61.mp4" playsinline crossorigin="anonymous"></video>
-      <video id="video62" src="./kk62.mp4" playsinline crossorigin="anonymous"></video>
+      <video id="video61" src="./kk61.mp4" muted playsinline crossorigin="anonymous"></video>
+      <video id="video62" src="./kk62.mp4" muted playsinline crossorigin="anonymous"></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -80,10 +80,10 @@
 
     <!-- 成功・失敗動画プレーン（ターゲットに依存しない） -->
     <a-entity id="success-video" visible="false">
-      <a-plane width="2" height="1.12" position="0 0 -3" material="shader: flat; src: #video62"></a-plane>
+      <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #video62"></a-plane>
     </a-entity>
     <a-entity id="fail-video" visible="false">
-      <a-plane width="2" height="1.12" position="0 0 -3" material="shader: flat; src: #video61"></a-plane>
+      <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #video61"></a-plane>
     </a-entity>
   </a-scene>
 
@@ -118,8 +118,8 @@
           v.currentTime = 0;
         });
 
-        successEntity.setAttribute("visible", false);
-        failEntity.setAttribute("visible", false);
+        successEntity.setAttribute("visible", true);
+        failEntity.setAttribute("visible", true);
 
         clearTimeout(timeoutId);
         clearInterval(countdownInterval);
