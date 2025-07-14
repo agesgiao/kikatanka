@@ -102,53 +102,72 @@ document.addEventListener("DOMContentLoaded", () => {
     { video: document.getElementById("video7"), entity: document.getElementById("target7") }, 
   ];
 
-  let visibleCount = 0;
-  let timeoutId = null;
-  let endingTriggered = false;
+let timeoutId = null;
+let countdownInterval = null;
+let endingTriggered = false;
 
+const countdownElem = document.getElementById("countdown");
 
-  // 通常ターゲット（0〜3）はそのまま再生
-  targets.slice(0, 4).forEach(({ video, entity }) => {
-    entity.addEventListener("targetFound", () => {
-      video.play();
-      visibleCount++;
-    });
-    entity.addEventListener("targetLost", () => {
-      video.pause();
-      visibleCount--;
-      if (visibleCount <= 0) {
-        visibleCount = 0;
-      }
-    });
-  });
+// ターゲット5（video5）の処理：10秒カウントスタート
+targets[4].entity.addEventListener("targetFound", () => {
+  if (endingTriggered) return;
+  targets[4].video.play();
 
-  // ターゲット5（video5）の処理：10秒カウントスタート
-  targets[4].entity.addEventListener("targetFound", () => {
-    if (endingTriggered) return; // すでにどちらかのエンディングが再生されていたら無視
-    targets[4].video.play();
+  let timeLeft = 10;
+  countdownElem.textContent = timeLeft;
+  countdownElem.style.display = "block";
 
-    // 10秒以内にターゲット6が見つからなかった場合はバッドエンド再生
-    timeoutId = setTimeout(() => {
-      if (!endingTriggered) {
-        targets[6].video.play(); // video62 = バッドエンド
-        endingTriggered = true;
-        console.log("バッドエンド再生");
-      }
-    }, 10000); // 10秒
-  });
+  countdownInterval = setInterval(() => {
+    timeLeft--;
+    countdownElem.textContent = timeLeft;
+    if (timeLeft <= 0) {
+      clearInterval(countdownInterval);
+    }
+  }, 1000);
 
-  // ターゲット6（video6）の処理：成功エンディング
-  targets[5].entity.addEventListener("targetFound", () => {
-    if (endingTriggered) return;
-    clearTimeout(timeoutId); // バッドエンドのカウントダウンを止める
-    targets[5].video.play(); // video61 = 成功エンディング
-    endingTriggered = true;
-    console.log("エンディング再生");
-  });
+  timeoutId = setTimeout(() => {
+    if (!endingTriggered) {
+      targets[6].video.play(); // video62 = バッドエンド
+      endingTriggered = true;
+      console.log("バッドエンド再生");
+      countdownElem.style.display = "none";
+    }
+  }, 10000);
+});
+
+// ターゲット6（video6）の処理：成功エンディング
+targets[5].entity.addEventListener("targetFound", () => {
+  if (endingTriggered) return;
+  clearTimeout(timeoutId);
+  clearInterval(countdownInterval);
+  countdownElem.style.display = "none";
+
+  targets[5].video.play(); // video61 = 成功エンディング
+  endingTriggered = true;
+  console.log("エンディング再生");
+});
 
   
 });
 
+	  
+	  
   </script>
+	
+	<div id="countdown" style="
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 4em;
+  font-weight: bold;
+  color: red;
+  z-index: 10;
+  display: none;
+  pointer-events: none;
+">
+  10
+</div>
+
 </body>
 </html>
