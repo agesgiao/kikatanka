@@ -52,33 +52,39 @@
       <video id="video2" src="./kk2.mp4" loop muted playsinline crossorigin="anonymous"></video>
       <video id="video3" src="./kk3.mp4" loop muted playsinline crossorigin="anonymous"></video>
       <video id="video4" src="./kk4.mp4" loop muted playsinline crossorigin="anonymous"></video>
-      <video id="video5" src="./kk5.mp4" muted playsinline crossorigin="anonymous"></video>
-      <video id="video61" src="./kk61.mp4" muted playsinline crossorigin="anonymous"></video>
-      <video id="video62" src="./kk62.mp4" muted playsinline crossorigin="anonymous"></video>
+      <video id="video5" src="./kk5.mp4" playsinline crossorigin="anonymous"></video>
+      <video id="video61" src="./kk61.mp4" playsinline crossorigin="anonymous"></video>
+      <video id="video62" src="./kk62.mp4" playsinline crossorigin="anonymous"></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- ターゲット1〜6 -->
-    <a-entity id="target1" mindar-image-target="targetIndex: 0">
+    <!-- ターゲット1: 成功判定用 → 表示なし -->
+    <a-entity id="target1" mindar-image-target="targetIndex: 0"></a-entity>
+
+    <!-- ターゲット2〜5: 通常動画 -->
+    <a-entity id="target2" mindar-image-target="targetIndex: 1">
       <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #video1"></a-plane>
     </a-entity>
-    <a-entity id="target2" mindar-image-target="targetIndex: 1">
+    <a-entity id="target3" mindar-image-target="targetIndex: 2">
       <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #video2"></a-plane>
     </a-entity>
-    <a-entity id="target3" mindar-image-target="targetIndex: 2">
+    <a-entity id="target4" mindar-image-target="targetIndex: 3">
       <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #video3"></a-plane>
     </a-entity>
-    <a-entity id="target4" mindar-image-target="targetIndex: 3">
+    <a-entity id="target5" mindar-image-target="targetIndex: 4">
       <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #video4"></a-plane>
     </a-entity>
-    <a-entity id="target5" mindar-image-target="targetIndex: 4">
+
+    <!-- ターゲット6: チャレンジ開始（kk5） -->
+    <a-entity id="target6" mindar-image-target="targetIndex: 5">
       <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #video5"></a-plane>
     </a-entity>
-    <a-entity id="target6" mindar-image-target="targetIndex: 5"></a-entity>
-    <a-entity id="target7" mindar-image-target="targetIndex: 6"></a-entity> <!-- リセット用 -->
 
-    <!-- 成功・失敗動画表示用 -->
+    <!-- ターゲット7: リセット -->
+    <a-entity id="target7" mindar-image-target="targetIndex: 6"></a-entity>
+
+    <!-- 成功・失敗エンド表示 -->
     <a-entity id="success-video" visible="false">
       <a-plane width="3" height="2" position="0 0 -3" material="shader: flat; src: #video62"></a-plane>
     </a-entity>
@@ -92,12 +98,12 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const targets = [
-        { video: document.getElementById("video1"), entity: document.getElementById("target1") }, // kk62表示用
-        { video: document.getElementById("video2"), entity: document.getElementById("target2") }, // kk1
-        { video: document.getElementById("video3"), entity: document.getElementById("target3") }, // kk2
-        { video: document.getElementById("video4"), entity: document.getElementById("target4") }, // kk3
-        { video: document.getElementById("video5"), entity: document.getElementById("target5") }, // kk4
-        { video: document.getElementById("video5"), entity: document.getElementById("target6") }, // kk5
+        { entity: document.getElementById("target1") }, // 成功判定だけ
+        { video: document.getElementById("video1"), entity: document.getElementById("target2") },
+        { video: document.getElementById("video2"), entity: document.getElementById("target3") },
+        { video: document.getElementById("video3"), entity: document.getElementById("target4") },
+        { video: document.getElementById("video4"), entity: document.getElementById("target5") },
+        { video: document.getElementById("video5"), entity: document.getElementById("target6") },
         { entity: document.getElementById("target7") } // リセット
       ];
 
@@ -114,17 +120,11 @@
       function resetAll() {
         console.log("🔁 リセット実行");
 
-        targets.forEach(t => {
-          if (t.video) {
-            t.video.pause();
-            t.video.currentTime = 0;
-          }
+        // 全動画を停止・巻き戻し
+        document.querySelectorAll("video").forEach(v => {
+          v.pause();
+          v.currentTime = 0;
         });
-
-        videoSuccess.pause();
-        videoSuccess.currentTime = 0;
-        videoFail.pause();
-        videoFail.currentTime = 0;
 
         successEntity.setAttribute("visible", false);
         failEntity.setAttribute("visible", false);
@@ -136,23 +136,22 @@
         endingTriggered = false;
       }
 
-      // 通常動画再生（kk1〜kk4）
-      [1, 2, 3, 4].forEach(index => {
-        targets[index].entity.addEventListener("targetFound", () => {
+      // 通常動画再生
+      for (let i = 1; i <= 4; i++) {
+        targets[i].entity.addEventListener("targetFound", () => {
           if (!challengeStarted && !endingTriggered) {
-            targets[index].video.play();
+            targets[i].video.play();
           }
         });
-      });
+      }
 
-      // ターゲット6 → チャレンジ開始（kk5）
+      // チャレンジ開始（kk5）
       targets[5].entity.addEventListener("targetFound", () => {
         if (challengeStarted || endingTriggered) return;
 
         challengeStarted = true;
         targets[5].video.play();
 
-        // カウントダウン開始
         let count = 10;
         countdownEl.textContent = count;
         countdownEl.style.display = "block";
@@ -170,16 +169,15 @@
           if (!endingTriggered) {
             targets[5].video.pause();
             targets[5].video.currentTime = 0;
-
             failEntity.setAttribute("visible", true);
             videoFail.play();
             endingTriggered = true;
-            console.log("❌ 失敗エンド再生（kk61）");
+            console.log("❌ 失敗エンド再生");
           }
         }, 10000);
       });
 
-      // 成功判定：ターゲット1が制限内に見つかったら成功（kk62）
+      // 成功判定（ターゲット1）
       targets[0].entity.addEventListener("targetFound", () => {
         if (!challengeStarted || endingTriggered) return;
 
@@ -193,10 +191,10 @@
         successEntity.setAttribute("visible", true);
         videoSuccess.play();
         endingTriggered = true;
-        console.log("✅ 成功エンド再生（kk62）");
+        console.log("✅ 成功エンド再生");
       });
 
-      // ターゲット7 → リセット
+      // リセット（ターゲット7）
       targets[6].entity.addEventListener("targetFound", () => {
         resetAll();
       });
