@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MindAR 4 Video Targets with Overlay</title>
+
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      overflow: hidden;
+      height: 100%;
+      background: white;
+    }
+
+    a-scene {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #white-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: white;
+      z-index: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="white-overlay"></div>
+
+  <a-scene
+    mindar-image="imageTargetSrc: ./test2.mind; filterMinCF:0.0001; showStats: false; uiScanning: false;"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights, alpha: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+  >
+    <a-assets>
+      <video id="video1" src="./hana2.mp4" loop muted playsinline crossorigin="anonymous"></video>
+      <video id="video2" src="./ame.mp4" loop muted playsinline crossorigin="anonymous"></video>
+      <video id="video3" src="./hare.mp4" loop muted playsinline crossorigin="anonymous"></video>
+      <video id="video4" src="./ya.mp4" loop muted playsinline crossorigin="anonymous"></video>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <a-entity id="target0" mindar-image-target="targetIndex: 0">
+      <a-plane width="2" height="1.12" position="0 0 0"
+               material="shader: flat; src: #video1"></a-plane>
+    </a-entity>
+
+    <a-entity id="target1" mindar-image-target="targetIndex: 1">
+      <a-plane width="2" height="1.12" position="0 0 0"
+               material="shader: flat; src: #video2"></a-plane>
+    </a-entity>
+
+    <a-entity id="target2" mindar-image-target="targetIndex: 2">
+      <a-plane width="3" height="2.24" position="0 0 0"
+               material="shader: flat; src: #video3"></a-plane>
+    </a-entity>
+
+    <a-entity id="target3" mindar-image-target="targetIndex: 3">
+      <a-plane width="3" height="2.24" position="0 0 0"
+               material="shader: flat; src: #video4"></a-plane>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const overlay = document.getElementById("white-overlay");
+      const targets = [
+        { video: document.getElementById("video1"), entity: document.getElementById("target0") },
+        { video: document.getElementById("video2"), entity: document.getElementById("target1") },
+        { video: document.getElementById("video3"), entity: document.getElementById("target2") },
+        { video: document.getElementById("video4"), entity: document.getElementById("target3") },
+      ];
+
+      let visibleCount = 0;
+
+      const showOverlay = () => {
+        overlay.classList.remove("hidden");
+      };
+
+      const hideOverlay = () => {
+        overlay.classList.add("hidden");
+      };
+
+      targets.forEach(({ video, entity }) => {
+        entity.addEventListener("targetFound", () => {
+          video.play();
+          visibleCount++;
+          hideOverlay();
+        });
+
+        entity.addEventListener("targetLost", () => {
+          video.pause();
+          visibleCount--;
+          if (visibleCount <= 0) {
+            visibleCount = 0;
+            showOverlay();
+          }
+        });
+      });
+
+      // 初期表示ではオーバーレイを表示
+      showOverlay();
+    });
+  </script>
+</body>
+</html>
