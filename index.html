@@ -23,7 +23,19 @@
       left: 0;
     }
 
-
+  #countdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4em;
+    font-weight: bold;
+    color: red;
+    z-index: 9999;
+    display: none;
+    pointer-events: none;
+    text-shadow: 2px 2px 5px white;
+  }
   </style>
 </head>
 <body>
@@ -43,7 +55,6 @@
 	  <video id="video5" src="./kk5.mp4" loop muted playsinline crossorigin="anonymous"></video>
 	  <video id="video61" src="./kk61.mp4" loop muted playsinline crossorigin="anonymous"></video>
 	  <video id="video62" src="./kk62.mp4" loop muted playsinline crossorigin="anonymous"></video>
-	  <video id="video7" src="./kk7.mp4" loop muted playsinline crossorigin="anonymous"></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -82,11 +93,6 @@
       <a-plane width="3" height="2.24" position="0 0 0"
                material="shader: flat; src: #video62"></a-plane>
 	</a-entity>
-			
-	<a-entity id="target7" mindar-image-target="targetIndex: 7">
-      <a-plane width="3" height="2.24" position="0 0 0"
-               material="shader: flat; src: #video7"></a-plane>
-	</a-entity>
   </a-scene>
 
   <script>
@@ -99,7 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
     { video: document.getElementById("video5"), entity: document.getElementById("target4") }, // target5
     { video: document.getElementById("video61"), entity: document.getElementById("target5") }, // エンディング
 	{ video: document.getElementById("video62"), entity: document.getElementById("target6") },// バッドエンド
-    { video: document.getElementById("video7"), entity: document.getElementById("target7") }, 
   ];
 
 let timeoutId = null;
@@ -108,7 +113,7 @@ let endingTriggered = false;
 
 const countdownElem = document.getElementById("countdown");
 
-// ターゲット5（video5）の処理：10秒カウントスタート
+// ターゲット5（kk5）が見つかったとき
 targets[4].entity.addEventListener("targetFound", () => {
   if (endingTriggered) return;
   targets[4].video.play();
@@ -125,26 +130,27 @@ targets[4].entity.addEventListener("targetFound", () => {
     }
   }, 1000);
 
+  // 10秒経っても成功しなければバッドエンド（kk61）を再生
   timeoutId = setTimeout(() => {
     if (!endingTriggered) {
-      targets[6].video.play(); // video62 = バッドエンド
+      targets[5].video.play(); // ← kk61：バッドエンド
       endingTriggered = true;
-      console.log("バッドエンド再生");
       countdownElem.style.display = "none";
+      console.log("バッドエンド再生");
     }
   }, 10000);
 });
 
-// ターゲット6（video6）の処理：成功エンディング
-targets[5].entity.addEventListener("targetFound", () => {
+// ターゲット6（kk6）が見つかったとき（成功） → kk62を再生
+targets[6].entity.addEventListener("targetFound", () => {
   if (endingTriggered) return;
   clearTimeout(timeoutId);
   clearInterval(countdownInterval);
   countdownElem.style.display = "none";
 
-  targets[5].video.play(); // video61 = 成功エンディング
+  targets[6].video.play(); // ← kk62：成功エンディング
   endingTriggered = true;
-  console.log("エンディング再生");
+  console.log("成功エンディング再生");
 });
 
   
@@ -154,20 +160,5 @@ targets[5].entity.addEventListener("targetFound", () => {
 	  
   </script>
 	
-	<div id="countdown" style="
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 4em;
-  font-weight: bold;
-  color: red;
-  z-index: 10;
-  display: none;
-  pointer-events: none;
-">
-  10
-</div>
-
 </body>
 </html>
