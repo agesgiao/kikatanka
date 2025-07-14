@@ -97,6 +97,8 @@
     { video: document.getElementById("video61") }, // kk61 バッドエンド
     { video: document.getElementById("video62"), entity: document.getElementById("target6") }, // ターゲット6（kk5）＆成功エンド
   ];
+	 
+  
 
   let timeoutId;
   let endingTriggered = false;
@@ -126,20 +128,39 @@
   });
 
   // ターゲット6（kk5） → チャレンジスタート
-  targets[6].entity.addEventListener("targetFound", () => {
-    if (endingTriggered || challengeStarted) return;
+ targets[6].entity.addEventListener("targetFound", () => {
+  if (endingTriggered || challengeStarted) return;
 
-    targets[6].video.play(); // kk5
-    challengeStarted = true;
+  targets[6].video.play(); // kk5
+  challengeStarted = true;
 
-    timeoutId = setTimeout(() => {
-      if (!endingTriggered) {
-        targets[5].video.play(); // kk61（バッドエンド）
-        endingTriggered = true;
-        console.log("失敗エンディング（kk61）再生");
-      }
-    }, 10000); // 10秒
-  });
+  // 🔽 カウントダウン表示の追加部分
+  const countdownEl = document.getElementById("countdown");
+  let count = 10;
+  countdownEl.textContent = count;
+  countdownEl.style.display = "block";
+
+  const countdownInterval = setInterval(() => {
+    count--;
+    countdownEl.textContent = count;
+    if (count === 0) {
+      clearInterval(countdownInterval);
+      countdownEl.style.display = "none";
+    }
+  }, 1000);
+
+  // 🔽 タイムアウト（失敗エンド）処理
+  timeoutId = setTimeout(() => {
+    clearInterval(countdownInterval);
+    countdownEl.style.display = "none";
+    if (!endingTriggered) {
+      targets[5].video.play(); // kk61（バッドエンド）
+      endingTriggered = true;
+      console.log("失敗エンディング（kk61）再生");
+    }
+  }, 10000);
+});
+
 });
 
   </script>
