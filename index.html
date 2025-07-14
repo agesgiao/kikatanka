@@ -87,81 +87,109 @@
   <div id="countdown">10</div>
 
   <script>
- document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
   const targets = [
-    { video: document.getElementById("video1"), entity: document.getElementById("target1") }, // ターゲット1
-    { video: document.getElementById("video2"), entity: document.getElementById("target2") }, // ターゲット2
-    { video: document.getElementById("video3"), entity: document.getElementById("target3") }, // ターゲット3
-    { video: document.getElementById("video4"), entity: document.getElementById("target4") }, // ターゲット4
-    { video: document.getElementById("video5"), entity: document.getElementById("target5") }, // ターゲット5（kk4）
-    { video: document.getElementById("video61") }, // kk61 バッドエンド
-    { video: document.getElementById("video62"), entity: document.getElementById("target6") }, // ターゲット6（kk5）＆成功エンド
+    { video: document.getElementById("video1"), entity: document.getElementById("target1") }, // ターゲット1 (kk62)
+    { video: document.getElementById("video2"), entity: document.getElementById("target2") }, // ターゲット2 (kk1)
+    { video: document.getElementById("video3"), entity: document.getElementById("target3") }, // ターゲット3 (kk2)
+    { video: document.getElementById("video4"), entity: document.getElementById("target4") }, // ターゲット4 (kk3)
+    { video: document.getElementById("video5"), entity: document.getElementById("target5") }, // ターゲット5 (kk4)
+    { video: document.getElementById("video61") },                                            // kk61（失敗エンド）
+    { video: document.getElementById("video62"), entity: document.getElementById("target6") },// ターゲット6 (kk5)
+    { entity: document.getElementById("target7") }                                            // ターゲット7（リセット）
   ];
-	 
-  
 
+  const countdownEl = document.getElementById("countdown");
+  let countdownInterval;
   let timeoutId;
-  let endingTriggered = false;
   let challengeStarted = false;
+  let endingTriggered = false;
 
-  // ターゲット1（成功判定用）
+  function resetAll() {
+    console.log("🔄 ストーリーリセット");
+
+    // すべての動画を停止＆巻き戻し
+    targets.forEach(t => {
+      if (t.video) {
+        t.video.pause();
+        t.video.currentTime = 0;
+      }
+    });
+
+    // 状態を初期化
+    challengeStarted = false;
+    endingTriggered = false;
+
+    // タイマー系リセット
+    clearTimeout(timeoutId);
+    clearInterval(countdownInterval);
+
+    // カウントダウン非表示
+    countdownEl.style.display = "none";
+  }
+
+  // ▶ ターゲット1（成功判定のみ、kk5中に限る）
   targets[0].entity.addEventListener("targetFound", () => {
     if (!challengeStarted || endingTriggered) return;
+
     clearTimeout(timeoutId);
-    targets[6].video.play(); // kk62（成功エンド）
-    endingTriggered = true;
-    console.log("成功エンディング（kk62）再生");
-  });
-
-  // ターゲット2〜5（kk1〜kk4）
-  targets[1].entity.addEventListener("targetFound", () => {
-    targets[1].video.play(); // kk1
-  });
-  targets[2].entity.addEventListener("targetFound", () => {
-    targets[2].video.play(); // kk2
-  });
-  targets[3].entity.addEventListener("targetFound", () => {
-    targets[3].video.play(); // kk3
-  });
-  targets[4].entity.addEventListener("targetFound", () => {
-    targets[4].video.play(); // kk4
-  });
-
-  // ターゲット6（kk5） → チャレンジスタート
- targets[6].entity.addEventListener("targetFound", () => {
-  if (endingTriggered || challengeStarted) return;
-
-  targets[6].video.play(); // kk5
-  challengeStarted = true;
-
-  // 🔽 カウントダウン表示の追加部分
-  const countdownEl = document.getElementById("countdown");
-  let count = 10;
-  countdownEl.textContent = count;
-  countdownEl.style.display = "block";
-
-  const countdownInterval = setInterval(() => {
-    count--;
-    countdownEl.textContent = count;
-    if (count === 0) {
-      clearInterval(countdownInterval);
-      countdownEl.style.display = "none";
-    }
-  }, 1000);
-
-  // 🔽 タイムアウト（失敗エンド）処理
-  timeoutId = setTimeout(() => {
     clearInterval(countdownInterval);
     countdownEl.style.display = "none";
-    if (!endingTriggered) {
-      targets[5].video.play(); // kk61（バッドエンド）
-      endingTriggered = true;
-      console.log("失敗エンディング（kk61）再生");
-    }
-  }, 10000);
+
+    targets[6].video.pause(); // kk5 停止
+    targets[6].video.currentTime = 0;
+
+    targets[0].video.play(); // kk62（成功エンド）
+    endingTriggered = true;
+    console.log("✅ 成功エンディング再生（kk62）");
+  });
+
+  // ▶ ターゲット2〜5（通常動画）
+  [1, 2, 3, 4].forEach(index => {
+    targets[index].entity.addEventListener("targetFound", () => {
+      if (endingTriggered || challengeStarted) return;
+      targets[index].video.play();
+    });
+  });
+
+  // ▶ ターゲット6（チャレンジ開始用kk5）
+  targets[6].entity.addEventListener("targetFound", () => {
+    if (endingTriggered || challengeStarted) return;
+
+    challengeStarted = true;
+    targets[6].video.play(); // kk5
+
+    let count = 10;
+    countdownEl.textContent = count;
+    countdownEl.style.display = "block";
+
+    countdownInterval = setInterval(() => {
+      count--;
+      countdownEl.textContent = count;
+      if (count <= 0) {
+        clearInterval(countdownInterval);
+        countdownEl.style.display = "none";
+      }
+    }, 1000);
+
+    timeoutId = setTimeout(() => {
+      if (!endingTriggered) {
+        targets[6].video.pause();
+        targets[6].video.currentTime = 0;
+
+        targets[5].video.play(); // kk61（失敗エンド）
+        endingTriggered = true;
+        console.log("❌ 失敗エンディング再生（kk61）");
+      }
+    }, 10000);
+  });
+
+  // ▶ ターゲット7（リセット）
+  targets[7].entity.addEventListener("targetFound", () => {
+    resetAll();
+  });
 });
 
-});
 
   </script>
 </body>
