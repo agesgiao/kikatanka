@@ -101,7 +101,7 @@
       let endingTriggered = false;
 
       function resetAll() {
-        console.log("🔁 リセット");
+        console.log("リセット");
         document.querySelectorAll("video").forEach(v => {
           v.pause();
           v.currentTime = 0;
@@ -113,6 +113,14 @@
         endingTriggered = false;
         successEntity.setAttribute("visible", false);
         failEntity.setAttribute("visible", false);
+		  
+		const scene = document.querySelector("a-scene");
+		const mindarSystem = scene.systems["mindar-image"];
+  		mindarSystem.stop(); // カメラ映像が止まった状態
+  		setTimeout(() => {
+			mindarSystem.start(); // 再開
+    		console.log("MindAR再起動");
+		}, 500);
       }
 
       // 通常再生
