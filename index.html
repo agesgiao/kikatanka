@@ -1,57 +1,37 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MindAR Countdown AR</title>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindAR Countdown Story</title>
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
   <style>
-    html, body {
-      margin: 0;
-      overflow: hidden;
-      height: 100%;
-    }
-
+    html, body { margin: 0; overflow: hidden; height: 100%; }
+    a-scene { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; }
     #countdown {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 4em;
-      font-weight: bold;
-      color: red;
-      z-index: 9999;
-      display: none;
-      pointer-events: none;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 4em; font-weight: bold; color: red;
+      z-index: 9999; display: none; pointer-events: none;
       text-shadow: 2px 2px 5px white;
     }
   </style>
 </head>
 <body>
-
-  <a-scene
-    mindar-image="imageTargetSrc: ./kikatanka.mind; filterMinCF:0.0001; showStats: false; uiScanning: false;"
-    color-space="sRGB"
-    renderer="colorManagement: true, physicallyCorrectLights, alpha: true"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false"
-  >
+  <a-scene mindar-image="imageTargetSrc: ./kikatanka.mind; filterMinCF:0.0001; uiScanning: false" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false">
     <a-assets>
       <video id="video1" src="./kk1.mp4" loop muted playsinline crossorigin="anonymous"></video>
       <video id="video2" src="./kk2.mp4" loop muted playsinline crossorigin="anonymous"></video>
       <video id="video3" src="./kk3.mp4" loop muted playsinline crossorigin="anonymous"></video>
       <video id="video4" src="./kk4.mp4" loop muted playsinline crossorigin="anonymous"></video>
-      <video id="video5" src="./kk5.mp4" playsinline crossorigin="anonymous"></video>
-      <video id="video61" src="./kk61.mp4" playsinline muted crossorigin="anonymous"></video>
-      <video id="video62" src="./kk62.mp4" playsinline muted crossorigin="anonymous"></video>
+      <video id="video5" src="./kk5.mp4" muted playsinline crossorigin="anonymous"></video>
+      <video id="video61" src="./kk61.mp4" muted playsinline crossorigin="anonymous"></video>
+      <video id="video62" src="./kk62.mp4" muted playsinline crossorigin="anonymous"></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- ターゲット -->
     <a-entity id="target1" mindar-image-target="targetIndex: 0"></a-entity>
     <a-entity id="target2" mindar-image-target="targetIndex: 1">
       <a-plane width="2" height="1.12" material="shader: flat; src: #video1"></a-plane>
@@ -69,12 +49,11 @@
       <a-plane width="2" height="1.12" material="shader: flat; src: #video5"></a-plane>
     </a-entity>
 
-    <!-- 成功・失敗エンド動画表示プレーン（常時固定位置） -->
     <a-entity id="success-video" visible="false">
-      <a-plane width="2" height="1.12" position="0 0 -2" material="shader: flat; src: #video62"></a-plane>
+      <a-plane width="2" height="1.12" position="0 0 -1" material="shader: flat; src: #video62"></a-plane>
     </a-entity>
     <a-entity id="fail-video" visible="false">
-      <a-plane width="2" height="1.12" position="0 0 -2" material="shader: flat; src: #video61"></a-plane>
+      <a-plane width="2" height="1.12" position="0 0 -1" material="shader: flat; src: #video61"></a-plane>
     </a-entity>
   </a-scene>
 
@@ -82,58 +61,33 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const videoKK1 = document.getElementById("video1");
-      const videoKK2 = document.getElementById("video2");
-      const videoKK3 = document.getElementById("video3");
-      const videoKK4 = document.getElementById("video4");
-      const videoKK5 = document.getElementById("video5");
       const videoSuccess = document.getElementById("video62");
       const videoFail = document.getElementById("video61");
-
-      const countdownEl = document.getElementById("countdown");
       const successEntity = document.getElementById("success-video");
       const failEntity = document.getElementById("fail-video");
+      const countdownEl = document.getElementById("countdown");
+
+      const video5 = document.getElementById("video5"); // kk5
 
       let challengeStarted = false;
       let endingTriggered = false;
-      let timeoutId = null;
-      let countdownInterval = null;
+      let countdownInterval, timeoutId;
 
-      // 状態初期化関数（動画終了時にリセット）
-      function resetState() {
-        challengeStarted = false;
-        endingTriggered = false;
-        successEntity.setAttribute("visible", false);
-        failEntity.setAttribute("visible", false);
-        countdownEl.style.display = "none";
+      // 通常動画（ターゲット2〜5）
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById("target" + (i + 1)).addEventListener("targetFound", () => {
+          if (!challengeStarted && !endingTriggered) {
+            document.getElementById("video" + i).play();
+          }
+        });
       }
 
-      // 成功・失敗動画終了時に状態を初期化
-      videoSuccess.addEventListener("ended", resetState);
-      videoFail.addEventListener("ended", resetState);
-
-      // 通常ターゲット再生（ターゲット2〜5）
-      document.getElementById("target2").addEventListener("targetFound", () => {
-        if (!challengeStarted && !endingTriggered) videoKK1.play();
-      });
-      document.getElementById("target3").addEventListener("targetFound", () => {
-        if (!challengeStarted && !endingTriggered) videoKK2.play();
-      });
-      document.getElementById("target4").addEventListener("targetFound", () => {
-        if (!challengeStarted && !endingTriggered) videoKK3.play();
-      });
-      document.getElementById("target5").addEventListener("targetFound", () => {
-        if (!challengeStarted && !endingTriggered) videoKK4.play();
-      });
-
-      // ターゲット6（チャレンジ開始）
+      // チャレンジ動画（ターゲット6：kk5）
       document.getElementById("target6").addEventListener("targetFound", () => {
         if (challengeStarted || endingTriggered) return;
 
         challengeStarted = true;
-        videoKK5.play();
-
-        // カウントダウン
+        video5.play();
         let count = 10;
         countdownEl.textContent = count;
         countdownEl.style.display = "block";
@@ -141,38 +95,39 @@
         countdownInterval = setInterval(() => {
           count--;
           countdownEl.textContent = count;
-          if (count <= 0) {
+          if (count === 0) {
             clearInterval(countdownInterval);
             countdownEl.style.display = "none";
           }
         }, 1000);
 
-        // タイムアウトで失敗
         timeoutId = setTimeout(() => {
           if (!endingTriggered) {
-            videoKK5.pause();
-            videoKK5.currentTime = 0;
+            video5.pause();
+            video5.currentTime = 0;
             failEntity.setAttribute("visible", true);
-            videoFail.play();
+            videoFail.play().catch(e => console.warn("kk61再生失敗", e));
             endingTriggered = true;
+            challengeStarted = false;
           }
         }, 10000);
       });
 
-      // ターゲット1（成功エンド判定）
+      // 成功エンド（ターゲット1）
       document.getElementById("target1").addEventListener("targetFound", () => {
         if (!challengeStarted || endingTriggered) return;
 
-        clearTimeout(timeoutId);
         clearInterval(countdownInterval);
+        clearTimeout(timeoutId);
         countdownEl.style.display = "none";
 
-        videoKK5.pause();
-        videoKK5.currentTime = 0;
-
+        video5.pause();
+        video5.currentTime = 0;
         successEntity.setAttribute("visible", true);
-        videoSuccess.play();
+        videoSuccess.play().catch(e => console.warn("kk62再生失敗", e));
+
         endingTriggered = true;
+        challengeStarted = false;
       });
     });
   </script>
