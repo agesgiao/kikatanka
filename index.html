@@ -203,29 +203,34 @@ document.addEventListener("DOMContentLoaded", () => {
   const voiceQueue = [];
   let currentVoice = null;
 
-  function enqueueVoice(id) {
-    voiceQueue.push(id);
+function enqueueVoice(id) {
+  // 現在再生中またはキュー内に同じIDがあれば無視
+  if (currentVoice && currentVoice.id === id) return;
+  if (voiceQueue.includes(id)) return;
+
+  voiceQueue.push(id);
+  tryPlayNextVoice();
+}
+
+function tryPlayNextVoice() {
+  if (currentVoice || voiceQueue.length === 0) return;
+
+  const nextId = voiceQueue.shift();
+  const nextVoice = voiceMap[nextId];
+  if (!nextVoice) {
+    tryPlayNextVoice(); // 無効なIDだった場合スキップ
+    return;
+  }
+
+  currentVoice = nextVoice;
+  currentVoice.currentTime = 0;
+  currentVoice.play();
+
+  currentVoice.onended = () => {
+    currentVoice = null;
     tryPlayNextVoice();
-  }
-
-  function tryPlayNextVoice() {
-    if (currentVoice) return;
-    if (voiceQueue.length === 0) return;
-
-    const nextId = voiceQueue.shift();
-    currentVoice = voiceMap[nextId];
-    if (!currentVoice) {
-      currentVoice = null;
-      tryPlayNextVoice();
-      return;
-    }
-    currentVoice.currentTime = 0;
-    currentVoice.play();
-    currentVoice.onended = () => {
-      currentVoice = null;
-      tryPlayNextVoice();
-    };
-  }
+  };
+}
 
   function resetVideos() {
     Object.values(videoMap).forEach(v => {
