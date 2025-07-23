@@ -4,28 +4,66 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MindAR 16 Targets</title>
+
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
   <style>
-    html, body { margin: 0; overflow: hidden; height: 100%; background-color: white; }
-    a-scene { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; }
-    .overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background-color: black; display: none; justify-content: center; align-items: center; z-index: 9999;
+    html, body {
+      margin: 0;
+      overflow: hidden;
+      height: 100%;
+      background-color: white;
     }
-    .overlay video { width: 100vw; height: 100vh; object-fit: cover; }
-    #overlay-video-success, #overlay-video-fail { transform: rotate(180deg); }
+
+    a-scene {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: black;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .overlay video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+    }
+
+    #overlay-video-success,
+    #overlay-video-fail {
+      transform: rotate(180deg);
+    }
+
+
     #countdown {
-      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(180deg);
-      font-size: 6em; font-weight: bold; color: red; z-index: 9999; display: none;
-      pointer-events: none; text-shadow: 2px 2px 5px white;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(180deg);
+      font-size: 6em;
+      font-weight: bold;
+      color: red;
+      z-index: 9999;
+      display: none;
+      pointer-events: none;
+      text-shadow: 2px 2px 5px white;
     }
   </style>
 </head>
 <body>
-  <a-scene mindar-image="imageTargetSrc: ./targets2.mind; filterMinCF:0.0001; showStats: false; uiScanning: false;"
-           color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights, alpha: true"
-           vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+  <a-scene mindar-image="imageTargetSrc: ./targets2.mind; filterMinCF:0.0001; showStats: false; uiScanning: false;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights, alpha: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
     <a-assets>
       <video id="kk1" src="./kk1.mp4" loop muted playsinline crossorigin="anonymous"></video>
       <video id="kk2" src="./kk2.mp4" loop muted playsinline crossorigin="anonymous"></video>
@@ -34,53 +72,123 @@
       <video id="kk5" src="./kk5.mp4" muted playsinline preload="auto"></video>
       <video id="kk6" src="./kk6.mp4" muted playsinline preload="auto"></video>
       <video id="kk7" src="./kk7.mp4" muted playsinline preload="auto"></video>
-      <audio id="voice1" src="./voice1.mp3"></audio>
-      <audio id="voice2" src="./voice2.mp3"></audio>
-      <audio id="voice3" src="./voice3.mp3"></audio>
-      <audio id="voice4" src="./voice4.mp3"></audio>
-      <audio id="voice5" src="./voice5.mp3"></audio>
-      <audio id="voice6" src="./voice6.mp3"></audio>
-      <audio id="voice7" src="./voice7.mp3"></audio>
-      <audio id="voice8" src="./voice8.mp3"></audio>
-      <audio id="voice9" src="./voice9.mp3"></audio>
-      <audio id="voice10" src="./voice10.mp3"></audio>
-      <audio id="voice11" src="./voice11.mp3"></audio>
-      <audio id="voice61" src="./voice61.mp3"></audio>
-      <audio id="voice62" src="./voice62.mp3"></audio>
-      <audio id="kk1-audio" src="./kk1-audio.mp3"></audio>
-      <audio id="kk2-audio" src="./kk2-audio.mp3"></audio>
-      <audio id="kk3-audio" src="./kk3-audio.mp3"></audio>
-      <audio id="kk4-audio" src="./kk4-audio.mp3"></audio>
+      <audio id="voice1" src="./voice1.mp3" preload="auto"></audio>
+      <audio id="voice2" src="./voice2.mp3" preload="auto"></audio>
+      <audio id="voice3" src="./voice3.mp3" preload="auto"></audio>
+      <audio id="voice4" src="./voice4.mp3" preload="auto"></audio>
+      <audio id="voice5" src="./voice5.mp3" preload="auto"></audio>
+      <audio id="voice6" src="./voice6.mp3" preload="auto"></audio>
+      <audio id="voice7" src="./voice7.mp3" preload="auto"></audio>
+      <audio id="voice8" src="./voice8.mp3" preload="auto"></audio>
+      <audio id="voice9" src="./voice9.mp3" preload="auto"></audio>
+      <audio id="voice10" src="./voice10.mp3" preload="auto"></audio>
+      <audio id="voice11" src="./voice11.mp3" preload="auto"></audio>
+      <audio id="kk1-audio" src="./kk1-audio.mp3" preload="auto"></audio>
+      <audio id="kk2-audio" src="./kk2-audio.mp3" preload="auto"></audio>
+      <audio id="kk3-audio" src="./kk3-audio.mp3" preload="auto"></audio>
+      <audio id="kk4-audio" src="./kk4-audio.mp3" preload="auto"></audio>
+      <audio id="kk5-audio" src="./kk5-audio.mp3" preload="auto"></audio>
+      <audio id="kk6-audio" src="./kk6-audio.mp3" preload="auto"></audio>
+      <audio id="kk7-audio" src="./kk7-audio.mp3" preload="auto"></audio>
+
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- ターゲットエンティティ -->
-    <!-- 省略（今までの通り target1 〜 target16 を配置） -->
+    <!-- ターゲット1〜16 -->
+<!-- ターゲット1〜16 -->
+<a-entity id="target1" mindar-image-target="targetIndex: 0"></a-entity>
+
+<a-entity id="target2" mindar-image-target="targetIndex: 1">
+  <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #kk1"></a-plane>
+</a-entity>
+
+<a-entity id="target3" mindar-image-target="targetIndex: 2">
+  <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #kk2"></a-plane>
+</a-entity>
+
+<a-entity id="target4" mindar-image-target="targetIndex: 3"></a-entity>
+
+<a-entity id="target5" mindar-image-target="targetIndex: 4">
+  <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #kk3"></a-plane>
+</a-entity>
+
+<a-entity id="target6" mindar-image-target="targetIndex: 5">
+  <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #kk4"></a-plane>
+</a-entity>
+
+<a-entity id="target7" mindar-image-target="targetIndex: 6"></a-entity>
+
+<a-entity id="target8" mindar-image-target="targetIndex: 7">
+  <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #kk5"></a-plane>
+</a-entity>
+
+<a-entity id="target9" mindar-image-target="targetIndex: 8"></a-entity>
+
+<a-entity id="target10" mindar-image-target="targetIndex: 9"></a-entity>
+
+<a-entity id="target11" mindar-image-target="targetIndex: 10">
+  <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #kk6"></a-plane>
+</a-entity>
+
+<a-entity id="target12" mindar-image-target="targetIndex: 11"></a-entity>
+
+<a-entity id="target13" mindar-image-target="targetIndex: 12">
+  <a-plane width="2" height="1.12" position="0 0 0" material="shader: flat; src: #kk7"></a-plane>
+</a-entity>
+
+<a-entity id="target14" mindar-image-target="targetIndex: 13"></a-entity>
+<a-entity id="target15" mindar-image-target="targetIndex: 14"></a-entity>
+<a-entity id="target16" mindar-image-target="targetIndex: 15"></a-entity>
 
   </a-scene>
 
+  <!-- オーバーレイ動画 -->
   <div id="overlay-success" class="overlay">
     <video id="overlay-video-success" src="./kk62.mp4" playsinline muted></video>
   </div>
+
   <div id="overlay-fail" class="overlay">
     <video id="overlay-video-fail" src="./kk61.mp4" playsinline muted></video>
   </div>
+
   <div id="countdown">10</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const voiceMap = {};
-  [...Array(11)].forEach((_, i) => voiceMap[`voice${i+1}`] = document.getElementById(`voice${i+1}`));
+  for (let i = 1; i <= 11; i++) {
+    voiceMap[voice${i}] = document.getElementById(voice${i});
+  }
   voiceMap["voice61"] = document.getElementById("voice61");
   voiceMap["voice62"] = document.getElementById("voice62");
-  voiceMap["kk1-audio"] = document.getElementById("kk1-audio");
-  voiceMap["kk2-audio"] = document.getElementById("kk2-audio");
-  voiceMap["kk3-audio"] = document.getElementById("kk3-audio");
-  voiceMap["kk4-audio"] = document.getElementById("kk4-audio");
 
-  const videoMap = {};
-  [1,2,3,4,5,6,7].forEach(i => videoMap[`kk${i}`] = document.getElementById(`kk${i}`));
+  const videoMap = {
+    kk1: document.getElementById("kk1"),
+    kk2: document.getElementById("kk2"),
+    kk3: document.getElementById("kk3"),
+    kk4: document.getElementById("kk4"),
+    kk5: document.getElementById("kk5"),
+    kk6: document.getElementById("kk6"),
+    kk7: document.getElementById("kk7")
+  };
+
+  const videoStateMap = {
+    kk1: false,
+    kk2: false,
+    kk3: false,
+    kk4: false,
+    kk5: false,
+    kk6: false,
+    kk7: false
+  };
+
+  const audioMap = {
+    kk1: document.getElementById("kk1-audio"),
+    kk2: document.getElementById("kk2-audio"),
+    kk3: document.getElementById("kk3-audio"),
+    kk4: document.getElementById("kk4-audio")
+  };
 
   const overlaySuccess = document.getElementById("overlay-success");
   const overlayFail = document.getElementById("overlay-fail");
@@ -88,95 +196,205 @@ document.addEventListener("DOMContentLoaded", () => {
   const overlayVideoFail = document.getElementById("overlay-video-fail");
   const countdownEl = document.getElementById("countdown");
 
-  let challengeStarted = false, endingTriggered = false, countdownInterval, timeoutId;
-  const voiceQueue = []; let currentVoice = null;
+  let challengeStarted = false;
+  let endingTriggered = false;
+  let countdownInterval, timeoutId;
 
-  function enqueueVoice(id) {
-    if (currentVoice?.id === id || voiceQueue.includes(id)) return;
-    voiceQueue.push(id);
-    tryPlayNextVoice();
+  const voiceQueue = [];
+  let currentVoice = null;
+
+function enqueueVoice(id) {
+  // 現在再生中またはキュー内に同じIDがあれば無視
+  if (currentVoice && currentVoice.id === id) return;
+  if (voiceQueue.includes(id)) return;
+
+  voiceQueue.push(id);
+  tryPlayNextVoice();
+}
+
+function tryPlayNextVoice() {
+  if (currentVoice || voiceQueue.length === 0) return;
+
+  const nextId = voiceQueue.shift();
+  const nextVoice = voiceMap[nextId];
+  if (!nextVoice) {
+    tryPlayNextVoice(); // 無効なIDだった場合スキップ
+    return;
   }
-  function tryPlayNextVoice() {
-    if (currentVoice || voiceQueue.length === 0) return;
-    const id = voiceQueue.shift(), el = voiceMap[id];
-    if (!el) return tryPlayNextVoice();
-    currentVoice = el;
-    el.currentTime = 0; el.play();
-    el.onended = () => { currentVoice = null; tryPlayNextVoice(); };
+
+  currentVoice = nextVoice;
+  currentVoice.currentTime = 0;
+  currentVoice.play();
+
+  currentVoice.onended = () => {
+    currentVoice = null;
+    tryPlayNextVoice();
+  };
+}
+
+  function resetVideos() {
+    Object.values(videoMap).forEach(v => {
+      v.pause();
+      v.currentTime = 0;
+    });
+    Object.values(audioMap).forEach(a => {
+      a.pause();
+      a.currentTime = 0;
+    });
+  }
+
+  function resetOverlayVideos() {
+    overlaySuccess.style.display = "none";
+    overlayFail.style.display = "none";
+    overlayVideoSuccess.pause();
+    overlayVideoSuccess.currentTime = 0;
+    overlayVideoFail.pause();
+    overlayVideoFail.currentTime = 0;
   }
 
   function resetAll() {
-    Object.values(videoMap).forEach(v => { v.pause(); v.currentTime = 0; });
-    Object.values(voiceMap).forEach(a => { a.pause(); a.currentTime = 0; });
-    overlaySuccess.style.display = overlayFail.style.display = "none";
-    overlayVideoSuccess.pause(); overlayVideoFail.pause();
-    overlayVideoSuccess.currentTime = overlayVideoFail.currentTime = 0;
+    resetVideos();
+    Object.values(voiceMap).forEach(a => {
+      a.pause();
+      a.currentTime = 0;
+    });
+    resetOverlayVideos();
     countdownEl.style.display = "none";
-    clearTimeout(timeoutId); clearInterval(countdownInterval);
-    challengeStarted = false; endingTriggered = false;
-    voiceQueue.length = 0; currentVoice = null;
+    clearTimeout(timeoutId);
+    clearInterval(countdownInterval);
+    challengeStarted = false;
+    endingTriggered = false;
+    voiceQueue.length = 0;
+    currentVoice = null;
+    Object.keys(videoStateMap).forEach(k => videoStateMap[k] = false);
   }
 
   function startCountdown() {
     if (challengeStarted) return;
-    challengeStarted = true; let count = 30;
-    countdownEl.textContent = count; countdownEl.style.display = "block";
+    challengeStarted = true;
+    let count = 30;
+    countdownEl.textContent = count;
+    countdownEl.style.display = "block";
+
     countdownInterval = setInterval(() => {
-      if (--count <= 0) clearInterval(countdownInterval);
+      count--;
       countdownEl.textContent = count;
+      if (count <= 0) {
+        clearInterval(countdownInterval);
+        countdownEl.style.display = "none";
+      }
     }, 1000);
+
     timeoutId = setTimeout(() => {
       if (!endingTriggered) {
+        resetOverlayVideos();
         overlayFail.style.display = "flex";
-        overlayVideoFail.play(); voiceMap["voice61"].play();
-        endingTriggered = true; challengeStarted = false;
+        overlayVideoFail.play();
+        voiceMap["voice61"].currentTime = 0;
+        voiceMap["voice61"].play();
+        challengeStarted = false;
+        endingTriggered = true;
       }
     }, 30000);
   }
 
-  overlayVideoSuccess.onended = () => overlaySuccess.style.display = "none";
-  overlayVideoFail.onended = () => overlayFail.style.display = "none";
+  overlayVideoSuccess.onended = () => {
+    overlaySuccess.style.display = "none";
+  };
+  overlayVideoFail.onended = () => {
+    overlayFail.style.display = "none";
+  };
 
   for (let i = 1; i <= 16; i++) {
-    document.getElementById(`target${i}`).addEventListener("targetFound", () => {
+    const el = document.getElementById(target${i});
+    el.addEventListener("targetFound", () => {
       if (challengeStarted && i !== 1 && !endingTriggered) return;
+
       switch (i) {
         case 1:
-          if (!challengeStarted) enqueueVoice("voice1");
-          else if (!endingTriggered) {
-            clearTimeout(timeoutId); clearInterval(countdownInterval);
+          if (!challengeStarted) {
+            enqueueVoice("voice1");
+          } else if (!endingTriggered) {
+            clearTimeout(timeoutId);
+            clearInterval(countdownInterval);
             countdownEl.style.display = "none";
+            resetOverlayVideos();
             overlaySuccess.style.display = "flex";
-            overlayVideoSuccess.play(); voiceMap["voice62"].play();
-            challengeStarted = false; endingTriggered = true;
+            overlayVideoSuccess.play();
+            voiceMap["voice62"].currentTime = 0;
+            voiceMap["voice62"].play();
+            challengeStarted = false;
+            endingTriggered = true;
           }
           break;
-        case 2: videoMap.kk1.play(); enqueueVoice("voice2"); break;
-        case 3: videoMap.kk2.play(); enqueueVoice("voice3"); break;
-        case 4: enqueueVoice("voice4"); break;
-        case 5: videoMap.kk3.play(); enqueueVoice("kk1-audio"); break;
-        case 6: videoMap.kk4.play(); enqueueVoice("voice5"); break;
-        case 7: enqueueVoice("voice6"); break;
-        case 8: videoMap.kk5.play(); enqueueVoice("kk2-audio"); break;
-        case 9: enqueueVoice("voice7"); break;
-        case 10: enqueueVoice("voice8"); break;
-        case 11: videoMap.kk6.play(); enqueueVoice("kk3-audio"); break;
-        case 12: enqueueVoice("voice9"); break;
-        case 13: videoMap.kk7.play(); enqueueVoice("kk4-audio"); break;
-        case 14: enqueueVoice("voice10"); break;
-        case 15:
-          resetAll();
-          const v11 = voiceMap["voice11"];
-          v11.play();
-          v11.onended = () => startCountdown();
+        case 2:
+          videoMap.kk1.play();
+          audioMap.kk1.play();
+          enqueueVoice("voice2");
           break;
-        case 16: resetAll(); break;
+        case 3:
+          videoMap.kk2.play();
+          audioMap.kk2.play();
+          enqueueVoice("voice3");
+          break;
+        case 4:
+          enqueueVoice("voice4");
+          break;
+        case 5:
+          videoMap.kk3.play();
+          audioMap.kk1.play();
+          break;
+        case 6:
+          videoMap.kk4.play();
+          enqueueVoice("voice5");
+          break;
+        case 7:
+          enqueueVoice("voice6");
+          break;
+        case 8:
+          videoMap.kk5.play();
+          audioMap.kk2.play();
+          break;
+        case 9:
+          enqueueVoice("voice7");
+          break;
+        case 10:
+          enqueueVoice("voice8");
+          break;
+        case 11:
+          videoMap.kk6.play();
+          audioMap.kk3.play();
+          break;
+        case 12:
+          enqueueVoice("voice9");
+          break;
+        case 13:
+          videoMap.kk7.play();
+          audioMap.kk4.play();
+          break;
+        case 14:
+          enqueueVoice("voice10");
+          break;
+        case 15:
+          resetVideos();
+          resetOverlayVideos();
+          const v11 = voiceMap["voice11"];
+          v11.currentTime = 0;
+          v11.play();
+          v11.onended = () => {
+            startCountdown();
+          };
+          break;
+        case 16:
+          resetAll();
+          break;
       }
     });
   }
 
   resetAll();
 });
+
 </script>
 </body>
 </html>
