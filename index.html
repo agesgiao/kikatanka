@@ -87,9 +87,6 @@
       <audio id="kk2-audio" src="./kk2-audio.mp3" preload="auto"></audio>
       <audio id="kk3-audio" src="./kk3-audio.mp3" preload="auto"></audio>
       <audio id="kk4-audio" src="./kk4-audio.mp3" preload="auto"></audio>
-      <audio id="kk5-audio" src="./kk5-audio.mp3" preload="auto"></audio>
-      <audio id="kk6-audio" src="./kk6-audio.mp3" preload="auto"></audio>
-      <audio id="kk7-audio" src="./kk7-audio.mp3" preload="auto"></audio>
 
     </a-assets>
 
@@ -158,7 +155,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const voiceMap = {};
   for (let i = 1; i <= 11; i++) {
-    voiceMap[voice${i}] = document.getElementById(voice${i});
+    voiceMap[`voice${i}`] = document.getElementById(`voice${i}`);
   }
   voiceMap["voice61"] = document.getElementById("voice61");
   voiceMap["voice62"] = document.getElementById("voice62");
@@ -171,16 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
     kk5: document.getElementById("kk5"),
     kk6: document.getElementById("kk6"),
     kk7: document.getElementById("kk7")
-  };
-
-  const videoStateMap = {
-    kk1: false,
-    kk2: false,
-    kk3: false,
-    kk4: false,
-    kk5: false,
-    kk6: false,
-    kk7: false
   };
 
   const audioMap = {
@@ -203,34 +190,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const voiceQueue = [];
   let currentVoice = null;
 
-function enqueueVoice(id) {
-  // 現在再生中またはキュー内に同じIDがあれば無視
-  if (currentVoice && currentVoice.id === id) return;
-  if (voiceQueue.includes(id)) return;
+  function enqueueVoice(id) {
+    if (currentVoice && currentVoice.id === id) return;
+    if (voiceQueue.includes(id)) return;
 
-  voiceQueue.push(id);
-  tryPlayNextVoice();
-}
-
-function tryPlayNextVoice() {
-  if (currentVoice || voiceQueue.length === 0) return;
-
-  const nextId = voiceQueue.shift();
-  const nextVoice = voiceMap[nextId];
-  if (!nextVoice) {
-    tryPlayNextVoice(); // 無効なIDだった場合スキップ
-    return;
+    voiceQueue.push(id);
+    tryPlayNextVoice();
   }
 
-  currentVoice = nextVoice;
-  currentVoice.currentTime = 0;
-  currentVoice.play();
+  function tryPlayNextVoice() {
+    if (currentVoice || voiceQueue.length === 0) return;
 
-  currentVoice.onended = () => {
-    currentVoice = null;
-    tryPlayNextVoice();
-  };
-}
+    const nextId = voiceQueue.shift();
+    const nextVoice = voiceMap[nextId];
+    if (!nextVoice) {
+      tryPlayNextVoice(); // skip invalid
+      return;
+    }
+
+    currentVoice = nextVoice;
+    currentVoice.currentTime = 0;
+    currentVoice.play();
+
+    currentVoice.onended = () => {
+      currentVoice = null;
+      tryPlayNextVoice();
+    };
+  }
 
   function resetVideos() {
     Object.values(videoMap).forEach(v => {
@@ -266,7 +252,6 @@ function tryPlayNextVoice() {
     endingTriggered = false;
     voiceQueue.length = 0;
     currentVoice = null;
-    Object.keys(videoStateMap).forEach(k => videoStateMap[k] = false);
   }
 
   function startCountdown() {
@@ -306,15 +291,13 @@ function tryPlayNextVoice() {
   };
 
   for (let i = 1; i <= 16; i++) {
-    const el = document.getElementById(target${i});
+    const el = document.getElementById(`target${i}`);
     el.addEventListener("targetFound", () => {
       if (challengeStarted && i !== 1 && !endingTriggered) return;
 
       switch (i) {
         case 1:
-          if (!challengeStarted) {
-            enqueueVoice("voice1");
-          } else if (!endingTriggered) {
+          if (challengeStarted && !endingTriggered) {
             clearTimeout(timeoutId);
             clearInterval(countdownInterval);
             countdownEl.style.display = "none";
@@ -325,16 +308,16 @@ function tryPlayNextVoice() {
             voiceMap["voice62"].play();
             challengeStarted = false;
             endingTriggered = true;
+          } else if (!challengeStarted) {
+            enqueueVoice("voice1");
           }
           break;
         case 2:
           videoMap.kk1.play();
-          audioMap.kk1.play();
           enqueueVoice("voice2");
           break;
         case 3:
           videoMap.kk2.play();
-          audioMap.kk2.play();
           enqueueVoice("voice3");
           break;
         case 4:
@@ -394,7 +377,7 @@ function tryPlayNextVoice() {
 
   resetAll();
 });
-
 </script>
+
 </body>
 </html>
